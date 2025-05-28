@@ -75,7 +75,7 @@ def main():
     """主函数"""
     # 任务1: 特定参数下的数值解与可视化
     # TODO: 调用solve_pendulum和plot_results
-     t, theta = solve_pendulum()
+    t, theta = solve_pendulum()
     plot_results(t, theta, 'Forced Pendulum: θ(t) vs t (Ω=5 rad/s)')
     # 任务2: 探究共振现象
     # TODO: 调用find_resonance并绘制共振曲线
