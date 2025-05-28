@@ -114,6 +114,36 @@ def analyze_limit_cycle(states: np.ndarray) -> Tuple[float, float]:
         period = np.nan
     
     return amplitude, period
+def compute_settling_time(t: np.ndarray, 
+                        states: np.ndarray, 
+                        threshold: float = 0.05) -> float:
+    """
+    计算系统进入稳态所需时间（收敛到极限环的时间）
+    
+    参数:
+        t: 时间序列
+        states: 状态变量矩阵 [x, v]
+        threshold: 判定稳态的阈值（相对变化率）
+    
+    返回:
+        float: 稳态建立时间（秒）
+    """
+    x = states[:, 0]  # 获取位移序列
+    peak_values = []
+    settling_index = len(t) - 1  # 默认最后时刻
+    
+    # 检测峰值序列
+    for i in range(1, len(x)-1):
+        if x[i] > x[i-1] and x[i] > x[i+1]:
+            peak_values.append(x[i])
+            # 当连续3个峰值的相对变化小于阈值
+            if len(peak_values) >= 3:
+                rel_diff = np.abs(np.diff(peak_values[-3:])) / peak_values[-3]
+                if np.all(rel_diff < threshold):
+                    settling_index = i
+                    break
+    
+    return t[settling_index]
 
 def main():
     """主函数：执行模拟和分析"""
@@ -134,7 +164,8 @@ def main():
         t, states = solve_ode(van_der_pol_ode, initial_state, t_span, dt, mu=mu, omega=omega)
         plot_time_evolution(t, states, f'Time Evolution of van der Pol Oscillator (μ={mu})')
         amplitude, period = analyze_limit_cycle(states)
-        print(f'μ = {mu}: Amplitude ≈ {amplitude:.3f}, Period ≈ {period*dt:.3f}')
+        settling_time = compute_settling_time(t, states)
+        print(f'μ = {mu}: Amplitude ≈ {amplitude:.3f}, Period ≈ {period*dt:.3f}，settling_time≈{settling_time:.2f}')
     
     # 任务3 - 相空间分析
     for mu in mu_values:
