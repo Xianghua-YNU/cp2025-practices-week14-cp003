@@ -9,7 +9,7 @@ def forced_pendulum_ode(t, state, l, g, C, Omega):
     返回: [dtheta/dt, domega/dt]
     """
     # TODO: 在此实现受迫单摆的ODE方程
-   theta, omega = state
+    theta, omega = state
     dtheta_dt = omega
     domega_dt = -(g/l)*np.sin(theta) + C*np.cos(theta)*np.sin(Omega*t)
     return [dtheta_dt, domega_dt]
